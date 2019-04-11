@@ -89,7 +89,3 @@ plt.xlabel("Batch number")
 plt.ylabel("Error")
 plt.show()
 
-# one-hot encoding digit labels
-train_labels = tf.keras.utils.to_categorical(mnist_train_labels, 10)
-test_labels = tf.keras.utils.to_categorical(mnist_test_labels, 10)
-
