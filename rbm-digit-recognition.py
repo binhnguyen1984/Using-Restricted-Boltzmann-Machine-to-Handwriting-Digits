@@ -24,15 +24,15 @@ class RBM(object):
     def __init__(self, input_shape, hidden_units):
         self.hidden_units = hidden_units
         self.input_shape=input_shape
-        self.__add_weights()
+        self.__add_weights__()
     
-    def __add_weights(self):
+    def __add_weights__(self):
         assert len(self.input_shape)==2
         self.W = tf.Variable(name='weights', dtype=tf.float32, initial_value=tf.zeros((self.input_shape[1], self.hidden_units)), trainable=True)
         self.v_b = tf.Variable(name='visible_bias', dtype=tf.float32, initial_value=tf.zeros([self.input_shape[1]]), trainable=True)
         self.h_b = tf.Variable(name='hidden_bias', dtype=tf.float32, initial_value=tf.zeros([self.hidden_units]), trainable=True)
         
-    def __forward(self, inputs):
+    def __forward__(self, inputs):
         # processing the input
         assert inputs.shape[1]==self.input_shape[1]
         v_state = inputs
@@ -40,22 +40,22 @@ class RBM(object):
         h_state = tf.nn.relu(tf.sign(h_prob-tf.random_uniform(tf.shape(h_prob))))
         return h_prob, h_state
     
-    def __backward(self, h_state):
+    def __backward__(self, h_state):
         # reconstructing the input
         v_prob = tf.nn.sigmoid(tf.matmul(h_state, tf.transpose(self.W))+ self.v_b)
         v_state = tf.nn.relu(tf.sign(v_prob-tf.random_uniform(tf.shape(v_prob))))
         return v_prob, v_state
     
-    def __one_pass(self, v0_state):
+    def __one_pass__(self, v0_state):
         # process one forward and backward round
-        h0_prob, h0_state = self.__forward(v0_state)
-        v1_prob, v1_state = self.__backward(h0_state)
+        h0_prob, h0_state = self.__forward__(v0_state)
+        v1_prob, v1_state = self.__backward__(h0_state)
         return h0_prob, h0_state, v1_prob, v1_state
             
     def fit(self, inputs, learning_rate=0.01, epochs=5, batch_size=100):
         v0_state = tf.placeholder(shape=self.input_shape, dtype=tf.float32)
-        h0_prob, h0_state, v1_prob, v1_state = self.__one_pass(v0_state)
-        h1_prob, h1_state, _, _ = self.__one_pass(v1_state)
+        h0_prob, h0_state, v1_prob, v1_state = self.__one_pass__(v0_state)
+        h1_prob, h1_state, _, _ = self.__one_pass__(v1_state)
         loss = tf.reduce_mean(tf.square(v0_state-v1_state))
 
         W_delta = tf.matmul(tf.transpose(v0_state), h0_prob) - tf.matmul(tf.transpose(v1_state), h1_prob)
